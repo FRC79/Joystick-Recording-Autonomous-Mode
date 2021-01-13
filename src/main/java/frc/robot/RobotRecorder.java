@@ -5,7 +5,7 @@ import frc.robot.Constants.RobotRecorderConstants;
 public class RobotRecorder {
 
     // inport constants from constants.java
-    static final double  SAVE_FREQ      = RobotRecorderConstants.RECORDING_FREQUENCY;
+    static final double  UPDATE_FREQ    = RobotRecorderConstants.UPDATE_FREQUENCY;
     static final double  AUTO_LENGTH    = RobotRecorderConstants.AUTONOMOUS_DURATION; 
     static final String  FILE_EXT       = RobotRecorderConstants.SAVE_FILE_EXTENTION;
     static final String  FILE_PATH      = RobotRecorderConstants.SAVE_FILE_PATH;
@@ -22,29 +22,30 @@ public class RobotRecorder {
 
     public void update(){
         
-        /**   if( (curTime - lastUpdate) >= updateFrequency){
-            if(curMode == Mode.PLAY){
+        if( (curTime - lastUpdate) >= updateFrequency){ // after the given time frequency
+            if(curMode == Mode.PLAY){ // when playing back info
 
-                if(curUpdateIndex >= recordArray.size()){
+                if(curUpdateIndex > recordArray.size()){ // stop when out of instructions to follow
 
                     stopPlaying();
                     return;
                 }else{
 
-                    curState = recordArray.get(curUpdateIndex);
+                    curState = recordArray.get(curUpdateIndex); // get instructions from this point in the save array 
                 }
-            }else if(curMode == Mode.RECORD){
+                curUpdateIndex++;   // update index for save array on next go around
+            }else if(curMode == Mode.RECORD){ // when recording
 
-                if(curUpdateIndex >= recordArray.size()){ 
+                if(curUpdateIndex >= recordArray.size()){ // stop recording when there's nothing more to record
 
                     stopRecording();
                     return;
                 }else{
 
-                    saveCurInfo();
+                    saveCurInfo(); // save robot state at this point in the recording
                 }
             }
-            lastUpdate = curTime;
-        }*/
+            lastUpdate = curTime; // set lastUpdate to reset the timer
+        }
     }
 }
