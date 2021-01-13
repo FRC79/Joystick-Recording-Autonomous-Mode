@@ -7,7 +7,7 @@ public class RobotRecorder {
     static final double  SAVE_FREQ      = // constant
     static final double  AUTO_LENGTH    = // constant 
     static final String  FILE_EXT       = // constant
-    static final String  FILE_PATH      = // conastant
+    static final String  FILE_PATH      = // constant
     static final boolean PRINT_DEBUG    = // constant
 
     private int curUpdateIndex;
@@ -17,7 +17,7 @@ public class RobotRecorder {
         RECORD,
         NORMAL
     }
-    private int curMode = Mode.NORMAL;
+    private Mode curMode = Mode.NORMAL;
 
     public void update(){
         
