@@ -20,6 +20,8 @@ public class RobotRecorder {
     // use an arraylist of hashMaps for storing the data about the robot
     private ArrayList<HashMap<String, double>> recordArray;
 
+    private HashMap<String, double> curState;
+
     private int curUpdateIndex; // current ID for the robotState to be recorded/played 
 
     // the modes of operation for the robotRecorder
@@ -36,7 +38,7 @@ public class RobotRecorder {
         // grab stuff from a file or something
     }
     
-    public EndPlayback(){
+    public stopPlaying(){
         curMode = Mode.NORMAL;
     }
 
@@ -46,7 +48,7 @@ public class RobotRecorder {
         curMode = Mode.RECORD;
     }
     
-    public EndRecording(){
+    public stopRecording(){
         curMode = Mode.NORMAL;
         // save recordArray to a file
     }
@@ -58,7 +60,7 @@ public class RobotRecorder {
      */
     public SetRobotData(String Key, double Value){
         if(curMode == Mode.RECORD & curUpdateIndex < recordArray.size()){
-            recordArray.get(curUpdateIndex).put(Key,Value); // at the current index, put this key value pair in the hashMap
+            curState.put(Key,Value); // at the current state, put this key value pair in the hashMap
         }
     }
     
@@ -69,7 +71,7 @@ public class RobotRecorder {
      */
     public double GetRobotData(String Key){
         if(curMode == Mode.PLAY & curUpdateIndex < recordArray.size()){
-            return recordArray.get(curUpdateIndex).get(Key);
+            return curState.get(Key);
         }
     }
 
@@ -84,14 +86,16 @@ public class RobotRecorder {
                     return;
                 }
                 curUpdateIndex++;   // update index for save array on next go around
+                curState = recordArray.get(curUpdateIndex); // update curState
             }else if(curMode == Mode.RECORD){ // when recording info
 
-                if(curUpdateIndex > recordArray.size()){ // stop recording when there's nothing more to record
+                if( curtime-startTime > AUTO_LENGTH*1000d){ // stop recording when auton recording ends
 
                     stopRecording();
                     return;
                 }
-                curUpdateIndex++;   // update index for save array on next go around
+                ArrayList.Add(curState); // save state to array
+                curState.clear() // clear state
             }
             lastUpdate = curTime; // set lastUpdate to reset the timer
         }
