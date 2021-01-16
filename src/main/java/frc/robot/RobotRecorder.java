@@ -36,16 +36,37 @@ public class RobotRecorder {
         // grab stuff from a file or something
     }
     
+    public EndPlayback(){
+        curMode = Mode.NORMAL;
+    }
+
     public StartRecording(){
-        recordArray = new ArrayList<>
+        recordArray = new ArrayList<HashMap<String, double>>();
+        startTime = System.currentTimeMillis();
+        curMode = Mode.RECORD;
     }
     
+    public EndRecording(){
+        curMode = Mode.NORMAL;
+        // save recordArray to a file
+    }
+
+    /**
+     * @param Key a unique string value that is a name for the value stored in the recording
+     * @param Value the value sto be stored at this point in the record, must be a double
+     * will store a value under a unique key at the current point in the robot record, only works when the robot is in recording mode.
+     */
     public SetRobotData(String Key, double Value){
         if(curMode == Mode.RECORD & curUpdateIndex < recordArray.size()){
             recordArray.get(curUpdateIndex).put(Key,Value); // at the current index, put this key value pair in the hashMap
         }
     }
     
+    /**
+     * @param Key the unique string name of a value you wan to retrieve at this point in the record
+     * if no such key is found or not in playback mode, returns null
+     * only works 
+     */
     public double GetRobotData(String Key){
         if(curMode == Mode.PLAY & curUpdateIndex < recordArray.size()){
             return recordArray.get(curUpdateIndex).get(Key);
