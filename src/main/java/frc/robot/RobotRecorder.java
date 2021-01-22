@@ -1,5 +1,5 @@
 
-// inport constants from constants.java
+// import constants from constants.java
 import frc.robot.Constants.RobotRecorderConstants;
 
 // use an arraylist of hashMaps for storing the data about the robot
@@ -8,21 +8,24 @@ import java.util.HashMap;
 
 public class RobotRecorder {
 
-    // inport constants from constants.java
+    // import constants from constants.java
     static final double  UPDATE_FREQ    = RobotRecorderConstants.UPDATE_FREQUENCY;
     static final double  AUTO_LENGTH    = RobotRecorderConstants.AUTONOMOUS_DURATION; 
     static final String  FILE_EXT       = RobotRecorderConstants.SAVE_FILE_EXTENTION;
     static final String  FILE_PATH      = RobotRecorderConstants.SAVE_FILE_PATH;
     static final boolean PRINT_DEBUG    = RobotRecorderConstants.PRINT_DEBUG_INFO;
+    //static final boolean VERBOSE_DEBUG  = RobotRecorderConstants.VERBOSE_DEBUG_PRINT;
     
-    private double startTime; // time recording started (to stop recording once it's over the auton period)
+    private double startTime; // time recording started (to stop recording once the auton period is over )
     
-    // use an arraylist of hashMaps for storing the data about the robot
+    // use an arraylist of hashMaps for storing and reading data about the robot
     private ArrayList<HashMap<String, double>> recordArray;
 
-    private HashMap<String, double> curState;
+    // the hashmap instance that data is written to / read from
+    // gets saved and cleared every update()
+    private HashMap<String, double> curState = new HashMap<String, double>();
 
-    private int curUpdateIndex; // current ID for the robotState to be recorded/played 
+    private int curUpdateIndex; // current ID for the robot's State in the arraylist, for playback
 
     // the modes of operation for the robotRecorder
     enum Mode{
@@ -35,7 +38,7 @@ public class RobotRecorder {
     public StartPlayback(){
         curMode = Mode.PLAY;
         curUpdateIndex = 0;
-        // grab stuff from a file or something
+        // grab recordArray from a file or something
     }
     
     public stopPlaying(){
@@ -65,7 +68,7 @@ public class RobotRecorder {
     }
     
     /**
-     * @param Key the unique string name of a value you wan to retrieve at this point in the record
+     * @param Key the unique string name of a value to retrieve at this point in the record
      * if no such key is found or not in playback mode, returns null
      * only works 
      */
@@ -73,15 +76,17 @@ public class RobotRecorder {
         if(curMode == Mode.PLAY & curUpdateIndex < recordArray.size()){
             return curState.get(Key);
         }
+        return null;
     }
 
-    public update(){
+    private update(){
         
         if( (curTime - lastUpdate) >= updateFrequency){ // after the given time frequency
             if(curMode == Mode.PLAY){ // when playing back info
 
                 if(curUpdateIndex > recordArray.size()){ // stop when out of instructions to follow
 
+                    if(PRINT_DEBUG){ System.out.println("playback over, out of instructions"); }
                     stopPlaying();
                     return;
                 }
@@ -91,13 +96,14 @@ public class RobotRecorder {
 
                 if( curtime-startTime > AUTO_LENGTH*1000d){ // stop recording when auton recording ends
 
+                    if(PRINT_DEBUG){ System.out.println("Recording over, autonomous timer expired"); }
                     stopRecording();
                     return;
                 }
-                ArrayList.Add(curState); // save state to array
-                curState.clear() // clear state
+                ArrayList.Add(curState); // save current state to array
+                curState.clear() // clear state for next go around
             }
-            lastUpdate = curTime; // set lastUpdate to reset the timer
+            lastUpdate = System.currentTimeMillis(); // set lastUpdate to reset the timer (mabye move to micro seconds)
         }
     }
 }
