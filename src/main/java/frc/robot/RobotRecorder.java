@@ -1,4 +1,11 @@
+/**
 
+This class will have an array of hashmaps that store given info about the robot and play it back on request
+
+an example of how to use this can be found (link here) 
+this is also used in the CK_23.5 repo found (link here)
+
+*/
 // import constants from constants.java
 import frc.robot.Constants.RobotRecorderConstants;
 
@@ -14,7 +21,7 @@ public class RobotRecorder {
     static final String  FILE_EXT       = RobotRecorderConstants.SAVE_FILE_EXTENTION;
     static final String  FILE_PATH      = RobotRecorderConstants.SAVE_FILE_PATH;
     static final boolean PRINT_DEBUG    = RobotRecorderConstants.PRINT_DEBUG_INFO;
-    //static final boolean VERBOSE_DEBUG  = RobotRecorderConstants.VERBOSE_DEBUG_PRINT;
+    static final boolean VERBOSE_DEBUG  = RobotRecorderConstants.VERBOSE_DEBUG_PRINT;
     
     private double startTime; // time recording started (to stop recording once the auton period is over )
     
@@ -25,7 +32,7 @@ public class RobotRecorder {
     // gets saved and cleared every update()
     private HashMap<String, double> curState = new HashMap<String, double>();
 
-    private int curUpdateIndex; // current ID for the robot's State in the arraylist, for playback
+    private int curUpdateIndex; // current ID for the robot's State in the arraylist, for playback 
 
     // the modes of operation for the robotRecorder
     enum Mode{
@@ -81,12 +88,15 @@ public class RobotRecorder {
 
     private update(){
         
-        if( (curTime - lastUpdate) >= updateFrequency){ // after the given time frequency
+        if( (System.currentTimeMillis() - lastUpdate) >= updateFrequency){ // after the given time frequency
             if(curMode == Mode.PLAY){ // when playing back info
 
                 if(curUpdateIndex > recordArray.size()){ // stop when out of instructions to follow
 
                     if(PRINT_DEBUG){ System.out.println("playback over, out of instructions"); }
+                    if(PRINT_DEBUG && VERBOSE_DEBUG){ // in depth info about the end of playback
+                        System.out.println("Recording End info:"+recordArray.length+"instructions"); 
+                    }
                     stopPlaying();
                     return;
                 }
@@ -94,13 +104,16 @@ public class RobotRecorder {
                 curState = recordArray.get(curUpdateIndex); // update curState
             }else if(curMode == Mode.RECORD){ // when recording info
 
-                if( curtime-startTime > AUTO_LENGTH*1000d){ // stop recording when auton recording ends
+                if( System.currentTimeMillis()-startTime > AUTO_LENGTH*1000d){ // stop recording when auton recording ends
 
                     if(PRINT_DEBUG){ System.out.println("Recording over, autonomous timer expired"); }
+                    if(PRINT_DEBUG && VERBOSE_DEBUG){  // in depth info about the end of recording
+                        System.out.println("Recording End info:"+recordArray.length+"instructions"); 
+                    }
                     stopRecording();
                     return;
                 }
-                ArrayList.Add(curState); // save current state to array
+                recordArray.Add(curState); // save current state to array
                 curState.clear() // clear state for next go around
             }
             lastUpdate = System.currentTimeMillis(); // set lastUpdate to reset the timer (mabye move to micro seconds)
