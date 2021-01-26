@@ -5,6 +5,13 @@ This class will have an array of hashmaps that store given info about the robot 
 an example of how to use this can be found (link here) 
 this is also used in the CK_23.5 repo found (link here)
 
+TODO:
+make make a robotState class that is serializeable and make curstate type robotState
+on save use file and object output to save files
+on load use file and object input to load files
+use the sendable chooser to let drivers choose what file to read from?
+    if not just make the filename an option in constants
+
 */
 // import constants from constants.java
 import frc.robot.Constants.RobotRecorderConstants;
