@@ -7,6 +7,9 @@ this is also used in the CK_23.5 repo found (link here)
 
 TODO:
 make make a robotState class that is serializeable and make curstate type robotState
+    re-write saving process to accomodate this
+    same with reading
+    mabye even change methods for assigning and retrieving keys/values
 on save use file and object output to save files
 on load use file and object input to load files
 use the sendable chooser to let drivers choose what file to read from?
@@ -32,12 +35,12 @@ public class RobotRecorder {
     
     private double startTime; // time recording started (to stop recording once the auton period is over )
     
-    // use an arraylist of hashMaps for storing and reading data about the robot
-    private ArrayList<HashMap<String, double>> recordArray;
+    // use an arraylist of robot states for storing and reading data about the robot
+    private ArrayList<RobotState> recordArray;
 
-    // the hashmap instance that data is written to / read from
+    // robotState that hold info about the robot in one moment
     // gets saved and cleared every update()
-    private HashMap<String, double> curState = new HashMap<String, double>();
+    private RobotState curState;
 
     private int curUpdateIndex; // current ID for the robot's State in the arraylist, for playback 
     
@@ -50,6 +53,27 @@ public class RobotRecorder {
         NORMAL
     }
     private Mode curMode = Mode.NORMAL;
+    
+    // begining of making curstate a serializable class
+    /**
+    * Describes the robot's state in a single moment
+    * arraylist of robotStates will be used to make a recording of the robot
+    */
+    private static class RobotState implements java.io.Serializable {
+        /* every serializable class needs a serial version id as a long, idk what to make it though */
+        private static final long serialVersionUID = -1L; 
+        
+        /* the keys and vlues that actually describe the robot */
+        public HashMap<String, double> valueMap = new HashMap<String, double>();
+        
+        /* need to overwrite toString, used in the serialization process */
+        @Override
+        public String toString() {
+            /**
+            TODO: mabye loop through valueMap and print keys with values or something
+            */
+        }
+    }
     
     public StartPlayback(){
         curMode = Mode.PLAY;
