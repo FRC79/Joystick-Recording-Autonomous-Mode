@@ -40,6 +40,8 @@ public class RobotRecorder {
     private HashMap<String, double> curState = new HashMap<String, double>();
 
     private int curUpdateIndex; // current ID for the robot's State in the arraylist, for playback 
+    
+    private double curTime = System.currentTimeMillis(); // current time for update() (milliseconds) (might make this microseconds)
 
     // the modes of operation for the robotRecorder
     enum Mode{
@@ -61,7 +63,7 @@ public class RobotRecorder {
 
     public StartRecording(){
         recordArray = new ArrayList<HashMap<String, double>>();
-        startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis()*1000;
         curMode = Mode.RECORD;
     }
     
@@ -95,7 +97,7 @@ public class RobotRecorder {
 
     private update(){
         
-        if( (System.currentTimeMillis() - lastUpdate) >= updateFrequency){ // after the given time frequency
+        if( (curTime - lastUpdate) >= updateFrequency){ // after the given time frequency
             if(curMode == Mode.PLAY){ // when playing back info
 
                 if(curUpdateIndex > recordArray.size()){ // stop when out of instructions to follow
@@ -111,7 +113,7 @@ public class RobotRecorder {
                 curState = recordArray.get(curUpdateIndex); // update curState
             }else if(curMode == Mode.RECORD){ // when recording info
 
-                if( System.currentTimeMillis()-startTime > AUTO_LENGTH*1000d){ // stop recording when auton recording ends
+                if( System.currentTimeMillis()*1000-startTime > AUTO_LENGTH){ // stop recording when auton recording ends
 
                     if(PRINT_DEBUG){ System.out.println("Recording over, autonomous timer expired"); }
                     if(PRINT_DEBUG && VERBOSE_DEBUG){  // in depth info about the end of recording
@@ -123,7 +125,7 @@ public class RobotRecorder {
                 recordArray.Add(curState); // save current state to array
                 curState.clear() // clear state for next go around
             }
-            lastUpdate = System.currentTimeMillis(); // set lastUpdate to reset the timer (mabye move to micro seconds)
+            lastUpdate = curTime; // set lastUpdate to reset the timer 
         }
     }
 }
