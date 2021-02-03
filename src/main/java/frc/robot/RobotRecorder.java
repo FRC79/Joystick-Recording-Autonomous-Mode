@@ -15,6 +15,8 @@ use the sendable chooser to let drivers choose what file to read from?
     if not just make the filename an option in constants
 
 */
+package org.usfirst.frc.team79.robot;
+
 // import constants from constants.java
 import frc.robot.Constants.RobotRecorderConstants;
 
@@ -23,6 +25,13 @@ import java.util.ArrayList;
 /* robotState uses HashMap */
 import java.util.HashMap;
 
+/* for saving and retrieving files */
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 public class RobotRecorder {
 
     // import constants from constants.java
@@ -30,6 +39,7 @@ public class RobotRecorder {
     static final double  AUTO_LENGTH    = RobotRecorderConstants.AUTONOMOUS_DURATION; 
     static final String  FILE_EXT       = RobotRecorderConstants.SAVE_FILE_EXTENTION;
     static final String  FILE_PATH      = RobotRecorderConstants.SAVE_FILE_PATH;
+    static final String  FILE_NAME      = RobotRecorderConstants.SAVE_FILE_NAME;
     static final boolean PRINT_DEBUG    = RobotRecorderConstants.PRINT_DEBUG_INFO;
     static final boolean VERBOSE_DEBUG  = RobotRecorderConstants.VERBOSE_DEBUG_PRINT;
     
@@ -88,10 +98,29 @@ public class RobotRecorder {
         }
     }
     
+    // methods for saing and retrieving recordArray to/from files
+    private void saveRecordArray(String fileName){
+        File outFile =  new File(fileName+FILE_EXT);	
+		try {
+			FileOutputStream fs = new FileOutputStream(outFile);
+			ObjectOutputStream os = new ObjectOutputStream(fs);
+			os.writeObject(recordArray);
+			os.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    private ArrayList<RobotState> loadRecordArray(String fileName){
+        
+    }
+    
+    // methods for starting and stopping the recorder's different opporations    
     public void startPlayback(){
         curMode = Mode.PLAY;
         curUpdateIndex = 0;
         // grab recordArray from a file
+        recordArray = loadRecordArray(FILE_NAME);
     }
     
     public void stopPlaying(){
@@ -107,6 +136,7 @@ public class RobotRecorder {
     public void stopRecording(){
         curMode = Mode.NORMAL;
         // save recordArray to a file
+        saveRecordArray(FILE_NAME);
     }
 
     /**
@@ -115,7 +145,7 @@ public class RobotRecorder {
      * will store a value under a unique key at the current point in the robot record, only works when the robot is in recording mode.
      */
     public void setRobotData(String Key, double Value){
-        if(curMode == Mode.RECORD & curUpdateIndex < recordArray.size()){
+        if(curMode == Mode.RECORD){
             curState.put(Key,Value); // at the current state, put this key value pair in the hashMap
         }
     }
@@ -126,7 +156,7 @@ public class RobotRecorder {
      * only works 
      */
     public double getRobotData(String Key){
-        if(curMode == Mode.PLAY & curUpdateIndex < recordArray.size()){
+        if(curMode == Mode.PLAY){
             return curState.get(Key);
         }
         return (Double) null;
