@@ -1,6 +1,6 @@
 /**
 
-This class will have an array of hashmaps that store given info about the robot and play it back on request
+This class will have an array of robotStates (like hashmaps but are made to be serializeable) that store given info about the robot and play it back on request
 
 an example of how to use this can be found (link here) 
 this is also used in the CK_23.5 repo found (link here)
@@ -9,7 +9,6 @@ TODO:
 make make a robotState class that is serializeable and make curstate type robotState
     re-write saving process to accomodate this
     same with reading
-    mabye even change methods for assigning and retrieving keys/values
 on save use file and object output to save files
 on load use file and object input to load files
 use the sendable chooser to let drivers choose what file to read from?
@@ -19,8 +18,9 @@ use the sendable chooser to let drivers choose what file to read from?
 // import constants from constants.java
 import frc.robot.Constants.RobotRecorderConstants;
 
-// use an arraylist of hashMaps for storing the data about the robot
+// use an arraylist of robotStates for storing the data about the robot
 import java.util.ArrayList;
+/* robotState uses HashMap */
 import java.util.HashMap;
 
 public class RobotRecorder {
@@ -33,12 +33,12 @@ public class RobotRecorder {
     static final boolean PRINT_DEBUG    = RobotRecorderConstants.PRINT_DEBUG_INFO;
     static final boolean VERBOSE_DEBUG  = RobotRecorderConstants.VERBOSE_DEBUG_PRINT;
     
-    private double startTime; // time recording started (to stop recording once the auton period is over )
+    private double startTime; // time recording started (to stop recording once the auton timer is over )
     
     // use an arraylist of robot states for storing and reading data about the robot
     private ArrayList<RobotState> recordArray;
 
-    // robotState that hold info about the robot in one moment
+    // robotState that hold info about the robot in a single moment
     // gets saved and cleared every update()
     private RobotState curState;
 
@@ -60,34 +60,30 @@ public class RobotRecorder {
     
     // begining of making curstate a serializable class
     /**
-    * Describes the robot's state in a single moment
+    * Describes the robot's state in a single moment in time
     * arraylist of robotStates will be used to make a recording of the robot
     */
     private static class RobotState implements java.io.Serializable {
-        /* every serializable class needs a serial version id as a long, idk what to make it though */
-        private static final long serialVersionUID = -1L; 
+        /* every serializable class needs a serial version id as a long, made it just a random number because i think it only has to be unique */
+        private static final long serialVersionUID = -4022972738L; 
         
         /* the keys and vlues that actually describe the robot */
-        public HashMap<String, Double> valueMap = new HashMap<String, Double>();
+        public HashMap<String, Double> valueMap;
         
-        /* need to overwrite toString, used in the serialization process */
-        @Override
-        public String toString() {
-            /**
-            TODO: mabye loop through valueMap and print keys with values or something
-            */
+        public void RobotState(){
+            valueMap = new HashMap<String, Double>();
         }
 
-        // functions just for making this class act like a hashmap
-        public double get(String key){ // see getRobotData
+        // functions just for making this class act like a hashMap
+        public double get(String key){
             return valueMap.get(key);
         }
 
-        public void put(String key, double value){ // see setRobotData
+        public void put(String key, double value){
             valueMap.put(key,value);
         }
 
-        public void clear(){ // you know what this does
+        public void clear(){
             valueMap.clear();
         }
     }
@@ -95,7 +91,7 @@ public class RobotRecorder {
     public void startPlayback(){
         curMode = Mode.PLAY;
         curUpdateIndex = 0;
-        // grab recordArray from a file or something
+        // grab recordArray from a file
     }
     
     public void stopPlaying(){
@@ -163,7 +159,7 @@ public class RobotRecorder {
                     stopRecording();
                     return;
                 }
-                recordArray.add(curState); // save current state to array
+                recordArray.add(curState); // save current state to record array
                 curState.clear(); // clear state for next go around
             }
             lastUpdate = curTime; // set lastUpdate to reset the timer 
