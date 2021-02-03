@@ -77,6 +77,19 @@ public class RobotRecorder {
             TODO: mabye loop through valueMap and print keys with values or something
             */
         }
+
+        // functions just for making this class act like a hashmap
+        public double get(String key){ // see getRobotData
+            return valueMap.get(key);
+        }
+
+        public void put(String key, double value){ // see setRobotData
+            valueMap.put(key,value);
+        }
+
+        public void clear(){ // you know what this does
+            valueMap.clear();
+        }
     }
     
     public void startPlayback(){
@@ -105,7 +118,7 @@ public class RobotRecorder {
      * @param Value the value sto be stored at this point in the record, must be a double
      * will store a value under a unique key at the current point in the robot record, only works when the robot is in recording mode.
      */
-    public void SetRobotData(String Key, double Value){
+    public void setRobotData(String Key, double Value){
         if(curMode == Mode.RECORD & curUpdateIndex < recordArray.size()){
             curState.put(Key,Value); // at the current state, put this key value pair in the hashMap
         }
@@ -116,11 +129,11 @@ public class RobotRecorder {
      * if no such key is found or not in playback mode, returns null
      * only works 
      */
-    public double GetRobotData(String Key){
+    public double getRobotData(String Key){
         if(curMode == Mode.PLAY & curUpdateIndex < recordArray.size()){
             return curState.get(Key);
         }
-        return null;
+        return (Double) null;
     }
 
     private void update(){
