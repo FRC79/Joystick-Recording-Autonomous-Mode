@@ -112,19 +112,35 @@ public class RobotRecorder {
     }
     
     private ArrayList<RobotState> loadRecordArray(String fileName){
-        
+        try {
+		FileInputStream fs = new FileInputStream(fileName); // try to find file by name
+		ObjectInputStream os = new ObjectInputStream(fs);
+				
+		recordArray = (ArrayList<RobotState>) os.readObject(); // cast the data to an array of robotStates and then assign it to recordArray
+				
+		in.close();
+		fileIn.close();
+	} 
+	catch (IOException e) {
+		e.printStackTrace();
+	} 
+	catch (ClassNotFoundException e) {
+		e.printStackTrace();
+	}
     }
     
     // methods for starting and stopping the recorder's different opporations    
     public void startPlayback(){
         curMode = Mode.PLAY;
         curUpdateIndex = 0;
+	infoPrint("playback starting", false);
         // grab recordArray from a file
-        recordArray = loadRecordArray(FILE_NAME);
+        loadRecordArray(FILE_NAME);
     }
     
     public void stopPlaying(){
         curMode = Mode.NORMAL;
+	infoPrint("playback over", false);
     }
 
     public void startRecording(){
@@ -164,14 +180,19 @@ public class RobotRecorder {
         return (Double) null;
     }
 	
+    /**
+    * @param text the text that should be printed
+    * @param verbose is this text verbose debug info
+    * a method that should be used for printing that considers if something should be printed or not depending on the settings
+    */
     private void infoPrint(String text, boolean verbose){   
-	if(!PRINT_DEBUG){ return; }
+	if(!PRINT_DEBUG){ return; } // if printing is turned off then stop right here
 	if(verbose){
 		if(PRINT_VERBOSE){
-			System.out.println(text);
+			System.out.println(text); // print verbose messages of allowed
 		}
 	}else{
-		System.out.println(text);
+		System.out.println(text); // print normal messages
 	}
 	
     }
