@@ -100,15 +100,15 @@ public class RobotRecorder {
     
     // methods for saing and retrieving recordArray to/from files
     private void saveRecordArray(String fileName){
-        File outFile =  new File(fileName+FILE_EXT);	
-		try {
-			FileOutputStream fs = new FileOutputStream(outFile);
-			ObjectOutputStream os = new ObjectOutputStream(fs);
-			os.writeObject(recordArray);
-			os.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        File outFile =  new File(fileName+FILE_EXT); // make a new file
+	try { // attempt to save the array to the file
+		FileOutputStream fs = new FileOutputStream(outFile);
+		ObjectOutputStream os = new ObjectOutputStream(fs);
+		os.writeObject(recordArray);
+		os.close();
+	} catch (Exception e) { // in the case the file cannot be written to
+		e.printStackTrace();
+	}
     }
     
     private ArrayList<RobotState> loadRecordArray(String fileName){
