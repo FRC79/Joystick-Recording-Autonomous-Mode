@@ -131,10 +131,12 @@ public class RobotRecorder {
         recordArray = new ArrayList<RobotState>();
         startTime = System.currentTimeMillis()*1000;
         curMode = Mode.RECORD;
+	infoPrint("recording starting", false);
     }
     
     public void stopRecording(){
         curMode = Mode.NORMAL;
+	infoPrint("recording over", false);
         // save recordArray to a file
         saveRecordArray(FILE_NAME);
     }
@@ -161,6 +163,18 @@ public class RobotRecorder {
         }
         return (Double) null;
     }
+	
+    private void infoPrint(String text, boolean verbose){   
+	if(!PRINT_DEBUG){ return; }
+	if(verbose){
+		if(PRINT_VERBOSE){
+			System.out.println(text);
+		}
+	}else{
+		System.out.println(text);
+	}
+	
+    }
 
     private void update(){
         
@@ -169,10 +183,6 @@ public class RobotRecorder {
 
                 if(curUpdateIndex > recordArray.size()){ // stop when out of instructions to follow
 
-                    if(PRINT_DEBUG){ System.out.println("playback over, out of instructions"); }
-                    if(PRINT_DEBUG && VERBOSE_DEBUG){ // in depth info about the end of playback
-                        System.out.println("Recording End info:"+recordArray.size()+"instructions"); 
-                    }
                     stopPlaying();
                     return;
                 }
@@ -181,11 +191,7 @@ public class RobotRecorder {
             }else if(curMode == Mode.RECORD){ // when recording info
 
                 if( System.currentTimeMillis()*1000-startTime > AUTO_LENGTH){ // stop recording when auton recording ends
-
-                    if(PRINT_DEBUG){ System.out.println("Recording over, autonomous timer expired"); }
-                    if(PRINT_DEBUG && VERBOSE_DEBUG){  // in depth info about the end of recording
-                        System.out.println("Recording End info:"+recordArray.size()+"instructions"); 
-                    }
+			
                     stopRecording();
                     return;
                 }
