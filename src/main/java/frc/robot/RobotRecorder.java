@@ -6,6 +6,7 @@ an example of how to use this can be found (link here)
 this is also used in the CK_23.5 repo found (link here)
 
 TODO:
+realize that hashmaps are serializeable and that the RobotState class exists for no reason
 use the sendable chooser to let drivers choose what file to read from?
     if not just make the filename an option in constants
 
