@@ -1,12 +1,12 @@
 /**
 
-This class will have an array of robotStates (like hashmaps but are made to be serializeable) that store given info about the robot and play it back on request
+This class will have an array of hashmaps that store given info about the robot and play it back on request
 
 an example of how to use this can be found (link here) 
 this is also used in the CK_23.5 repo found (link here)
 
 TODO:
-realize that hashmaps are serializeable and that the RobotState class exists for no reason
+realize that hashmaps are serializeable and that the RobotState class existed for no reason
 use the sendable chooser to let drivers choose what file to read from?
     if not just make the filename an option in constants
 
@@ -41,12 +41,12 @@ public class RobotRecorder {
     
     private double startTime; // time recording started (to stop recording once the auton timer is over )
     
-    // use an arraylist of robot states for storing and reading data about the robot
-    private ArrayList<RobotState> recordArray;
+    // use an arraylist of HashMaps for storing and reading data about the robot
+    private ArrayList<HashMap<String, Double>> recordArray;
 
-    // robotState that hold info about the robot in a single moment
+    // HashMap that hold info about the robot in a single moment
     // gets saved and cleared every update()
-    private RobotState curState;
+    private HashMap<String, Double> curState;
 
     /* current ID for the robot's State in the arraylist, for playback */
     private int curUpdateIndex; 
@@ -63,37 +63,8 @@ public class RobotRecorder {
         NORMAL
     }
     private Mode curMode = Mode.NORMAL;
-    
-    // begining of making curstate a serializable class
-    /**
-    * Describes the robot's state in a single moment in time
-    * arraylist of robotStates will be used to make a recording of the robot
-    */
-    private static class RobotState implements java.io.Serializable {
-        /* every serializable class needs a serial version id as a long, made it just a random number because i think it only has to be unique */
-        private static final long serialVersionUID = -4022972738L; 
-        
-        /* the keys and vlues that actually describe the robot */
-        public HashMap<String, Double> valueMap;
-        
-        public void RobotState(){
-            valueMap = new HashMap<String, Double>();
-        }
-
-        // functions just for making this class act like a hashMap
-        public double get(String key){
-            return valueMap.get(key);
-        }
-
-        public void put(String key, double value){
-            valueMap.put(key,value);
-        }
-
-        public void clear(){
-            valueMap.clear();
-        }
-    }
-    
+	
+	
     // methods for saing and retrieving recordArray to/from files
     private void saveRecordArray(String fileName){
         File outFile =  new File(fileName+FILE_EXT); // make a new file
@@ -140,7 +111,7 @@ public class RobotRecorder {
     }
 
     public void startRecording(){
-        recordArray = new ArrayList<RobotState>();
+        recordArray = new ArrayList<HashMap<String, Double>>();
         startTime = System.currentTimeMillis()*1000;
         curMode = Mode.RECORD;
 	infoPrint("recording starting", false);
