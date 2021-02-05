@@ -111,7 +111,7 @@ public class RobotRecorder {
 	}
     }
     
-    private ArrayList<RobotState> loadRecordArray(String fileName){
+    private void loadRecordArray(String fileName){
         try {
 		FileInputStream fs = new FileInputStream(fileName); // try to find file by name
 		ObjectInputStream os = new ObjectInputStream(fs);
