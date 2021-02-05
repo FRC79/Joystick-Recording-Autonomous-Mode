@@ -83,7 +83,7 @@ public class RobotRecorder {
 		FileInputStream fs = new FileInputStream(fileName); // try to find file by name
 		ObjectInputStream os = new ObjectInputStream(fs);
 				
-		recordArray = (ArrayList<RobotState>) os.readObject(); // cast the data to an array of robotStates and then assign it to recordArray
+		recordArray = (ArrayList<HashMap<String, Double>>) os.readObject(); // cast the data to an array of HashMaps and then assign it to recordArray
 				
 		in.close();
 		fileIn.close();
