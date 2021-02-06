@@ -11,7 +11,7 @@ use the sendable chooser to let drivers choose what file to read from?
     if not just make the filename an option in constants
 
 */
-package org.usfirst.frc.team79.robot;
+package frc.robot;
 
 // import constants from constants.java
 import frc.robot.Constants.RobotRecorderConstants;
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /* for saving and retrieving files */
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -85,8 +86,8 @@ public class RobotRecorder {
 				
 		recordArray = (ArrayList<HashMap<String, Double>>) os.readObject(); // cast the data to an array of HashMaps and then assign it to recordArray
 				
-		in.close();
-		fileIn.close();
+		os.close();
+		fs.close();
 	} 
 	catch (IOException e) {
 		e.printStackTrace();
@@ -155,7 +156,7 @@ public class RobotRecorder {
     private void infoPrint(String text, boolean verbose){   
 	if(!PRINT_DEBUG){ return; } // if printing is turned off then stop right here
 	if(verbose){
-		if(PRINT_VERBOSE){
+		if(VERBOSE_DEBUG){
 			System.out.println(text); // print verbose messages of allowed
 		}
 	}else{
