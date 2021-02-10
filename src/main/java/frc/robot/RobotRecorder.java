@@ -1,4 +1,4 @@
-/**
+/*
 
 This class will have an array of hashmaps that store given info about the robot and play it back on request
 
@@ -15,12 +15,11 @@ package frc.robot;
 // import constants from constants.java
 import frc.robot.Constants.RobotRecorderConstants;
 
-// use an arraylist of robotStates for storing the data about the robot
+// use an arraylist of hashmaps for storing the data about the robot
 import java.util.ArrayList;
-/* robotState uses HashMap */
 import java.util.HashMap;
 
-/* for saving and retrieving files */
+// for saving and retrieving files 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -39,22 +38,23 @@ public class RobotRecorder {
     static final boolean PRINT_DEBUG    = RobotRecorderConstants.PRINT_DEBUG_INFO;
     static final boolean VERBOSE_DEBUG  = RobotRecorderConstants.VERBOSE_DEBUG_PRINT;
     
-    private double startTime; // time recording started (to stop recording once the auton timer is over )
+    // time recording started (to stop recording once the auton timer is over ) 
+    private double startTime; 
     
-    // use an arraylist of HashMaps for storing and reading data about the robot
+    // use an arraylist of HashMaps for storing and reading data about the robot 
     private ArrayList<HashMap<String, Double>> recordArray;
 
-    // HashMap that hold info about the robot in a single moment
-    // gets saved and cleared every update()
+    /* HashMap that hold info about the robot in a single moment
+     gets saved and cleared every update() */
     private HashMap<String, Double> curState;
 
-    /* current ID for the robot's State in the arraylist, for playback */
+    // current ID for the robot's State in the arraylist, for playback 
     private int curUpdateIndex; 
     
-    /* last time update() ran */
+    // last time update() ran */
     private double lastUpdate;
 
-    // the modes of operation for the robotRecorder
+    // the modes of operation for the robotRecorder 
     enum Mode{
         PLAY,
         RECORD,
@@ -64,6 +64,7 @@ public class RobotRecorder {
 	
 	
     // methods for saing and retrieving recordArray to/from files
+	
     private void saveRecordArray(String fileName){
         File outFile =  new File(FILE_PATH+fileName+FILE_EXT); // make a new file
 	try { // attempt to save the array to the file
@@ -94,7 +95,8 @@ public class RobotRecorder {
 	}
     }
     
-    // methods for starting and stopping the recorder's different opporations    
+    // methods for starting and stopping the recorder's different opporations   
+	
     public void startPlayback(){
         curMode = Mode.PLAY;
         curUpdateIndex = 0;
