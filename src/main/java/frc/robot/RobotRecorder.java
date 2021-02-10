@@ -44,7 +44,7 @@ public class RobotRecorder {
     // use an arraylist of HashMaps for storing and reading data about the robot 
     private ArrayList<HashMap<String, Double>> recordArray;
 
-    /* HashMap that hold info about the robot in a single moment
+    /* HashMap that hold info about the robot in a single moment.
      gets saved and cleared every update() */
     private HashMap<String, Double> curState;
 
