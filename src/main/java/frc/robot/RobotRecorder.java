@@ -51,8 +51,6 @@ public class RobotRecorder {
     /* current ID for the robot's State in the arraylist, for playback */
     private int curUpdateIndex; 
     
-    /* current time for update() (milliseconds) (might make this microseconds) */
-    private double curTime = System.currentTimeMillis(); 
     /* last time update() ran */
     private double lastUpdate;
 
@@ -166,7 +164,7 @@ public class RobotRecorder {
 
     private void update(){
         
-        if( (curTime - lastUpdate) >= UPDATE_FREQ){ // after the given time frequency
+        if( (System.currentTimeMillis() - lastUpdate) >= UPDATE_FREQ){ // after the given time frequency
             if(curMode == Mode.PLAY){ // when playing back info
 
                 if(curUpdateIndex > recordArray.size()){ // stop when out of instructions to follow
@@ -186,7 +184,7 @@ public class RobotRecorder {
                 recordArray.add(curState); // save current state to record array
                 curState.clear(); // clear state for next go around
             }
-            lastUpdate = curTime; // set lastUpdate to reset the timer 
+            lastUpdate = System.currentTimeMillis(); // set lastUpdate to reset the timer 
         }
     }
 }
