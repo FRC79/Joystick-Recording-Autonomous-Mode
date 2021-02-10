@@ -68,7 +68,7 @@ public class RobotRecorder {
 	
     // methods for saing and retrieving recordArray to/from files
     private void saveRecordArray(String fileName){
-        File outFile =  new File(fileName+FILE_EXT); // make a new file
+        File outFile =  new File(FILE_PATH+fileName+FILE_EXT); // make a new file
 	try { // attempt to save the array to the file
 		FileOutputStream fs = new FileOutputStream(outFile);
 		ObjectOutputStream os = new ObjectOutputStream(fs);
@@ -81,7 +81,7 @@ public class RobotRecorder {
     
     private void loadRecordArray(String fileName){
         try {
-		FileInputStream fs = new FileInputStream(fileName); // try to find file by name
+		FileInputStream fs = new FileInputStream(FILE_PATH+fileName+FILE_EXT); // try to find file by name
 		ObjectInputStream os = new ObjectInputStream(fs);
 				
 		recordArray = (ArrayList<HashMap<String, Double>>) os.readObject(); // cast the data to an array of HashMaps and then assign it to recordArray
