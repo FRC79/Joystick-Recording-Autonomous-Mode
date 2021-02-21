@@ -1,16 +1,12 @@
 /*
-
 This class will have an array of hashmaps that store given info about the robot and play it back on request
-
 an example of how to use this can be found (link here) 
 this is also used in the CK_23.5 repo found (link here)
-
 TODO:
 use the sendable chooser to let drivers choose what file to read from?
     if not just make the filename an option in constants( current solution )
-
 */
-package frc.robot;
+package frc.robot; 
 
 // import constants from constants.java
 import frc.robot.Constants.RobotRecorderConstants;
@@ -30,8 +26,8 @@ import java.io.ObjectOutputStream;
 public class RobotRecorder {
 
     // import constants from constants.java
-    static final double  UPDATE_FREQ    = RobotRecorderConstants.RECORDING_FREQUENCY;
-    static final double  AUTO_LENGTH    = RobotRecorderConstants.AUTONOMOUS_DURATION; 
+    static final double  UPDATE_FREQ    = RobotRecorderConstants.UPDATE_FREQUENCY;
+    static final double  RECORD_LENGTH  = RobotRecorderConstants.RECORDING_DURATION; 
     static final String  FILE_EXT       = RobotRecorderConstants.SAVE_FILE_EXTENSION;
     static final String  FILE_PATH      = RobotRecorderConstants.SAVE_FILE_PATH;
     static final String  FILE_NAME      = RobotRecorderConstants.SAVE_FILE_NAME;
@@ -46,7 +42,7 @@ public class RobotRecorder {
 
     /* HashMap that holds info about the robot in a single moment.
      gets saved and cleared every update() */
-    private HashMap<String, Double> curState;
+    private HashMap<String, Double> curState = new HashMap<String, Double>();
 
     // current ID for the robot's State in the arraylist, for playback 
     private int curUpdateIndex; 
@@ -68,10 +64,12 @@ public class RobotRecorder {
     private void saveRecordArray(String fileName){
         File outFile =  new File(FILE_PATH+fileName+FILE_EXT); // make a new file
 	try { // attempt to save the array to the file
+        boolean fileSuccess = outFile.createNewFile();
 		FileOutputStream fs = new FileOutputStream(outFile);
 		ObjectOutputStream os = new ObjectOutputStream(fs);
 		os.writeObject(recordArray);
 		os.close();
+        infoPrint("file made: "+fileSuccess, false);
 	} catch (Exception e) { // in the case the file cannot be written to
 		e.printStackTrace();
 	}
@@ -99,27 +97,27 @@ public class RobotRecorder {
 	
     public void startPlayback(){
         curMode = Mode.PLAY;
-        curUpdateIndex = 0;
-	infoPrint("playback starting", false);
+        curUpdateIndex = 1; // start at 1, not zero, first vale in array in null
+	    infoPrint("playback starting", false);
         // grab recordArray from a file
         loadRecordArray(FILE_NAME);
     }
     
     public void stopPlaying(){
         curMode = Mode.NORMAL;
-	infoPrint("playback over", false);
+	    infoPrint("playback over", false);
     }
 
     public void startRecording(){
         recordArray = new ArrayList<HashMap<String, Double>>();
-        startTime = System.currentTimeMillis()*1000;
+        startTime = System.currentTimeMillis();
         curMode = Mode.RECORD;
-	infoPrint("recording starting", false);
+	    infoPrint("recording starting", false);
     }
     
     public void stopRecording(){
         curMode = Mode.NORMAL;
-	infoPrint("recording over", false);
+	    infoPrint("recording over", false);
         // save recordArray to a file
         saveRecordArray(FILE_NAME);
     }
@@ -138,9 +136,8 @@ public class RobotRecorder {
     /**
      * @param Key the unique string name of a value to retrieve at this point in the record
      * if no such key is found or not in playback mode, returns null
-     * only works 
      */
-    public double getRobotData(String Key){
+    public Double getRobotData(String Key){
         if(curMode == Mode.PLAY){
             return curState.get(Key);
         }
@@ -153,38 +150,36 @@ public class RobotRecorder {
     * a method that should be used for printing that considers if something should be printed or not depending on the settings
     */
     private void infoPrint(String text, boolean verbose){   
-	if(!PRINT_DEBUG){ return; } // if printing is turned off then stop right here
-	if(verbose){
-		if(VERBOSE_DEBUG){
-			System.out.println(text); // print verbose messages of allowed
-		}
-	}else{
-		System.out.println(text); // print normal messages
-	}
-	
+        if(!PRINT_DEBUG){ return; } // if printing is turned off then stop right here
+        if(verbose){
+            if(VERBOSE_DEBUG){
+                System.out.println(text); // print verbose messages of allowed
+            }
+        }else{
+            System.out.println(text); // print normal messages
+        }
+        
     }
 
-    private void update(){
-        
+    public void update(){
         if( (System.currentTimeMillis() - lastUpdate) >= UPDATE_FREQ){ // after the given time frequency
             if(curMode == Mode.PLAY){ // when playing back info
-
-                if(curUpdateIndex > recordArray.size()){ // stop when out of instructions to follow
-
+                //infoPrint(String.valueOf(recordArray), false);
+                if(curUpdateIndex >= recordArray.size()){ // stop when out of instructions to follow
                     stopPlaying();
                     return;
                 }
-                curUpdateIndex++;   // update index for save array on next go around
                 curState = recordArray.get(curUpdateIndex); // update curState
+                curUpdateIndex++;   // update index for save array on next go around
             }else if(curMode == Mode.RECORD){ // when recording info
-
-                if( System.currentTimeMillis()*1000-startTime > AUTO_LENGTH){ // stop recording when auton recording ends
-			
+                if(System.currentTimeMillis()-startTime > RECORD_LENGTH*1000){ // stop recording when auton recording ends
                     stopRecording();
                     return;
                 }
-                recordArray.add(curState); // save current state to record array
-                curState.clear(); // clear state for next go around
+                if(curState != null){
+                    recordArray.add(curState); // save current state to record array
+                }
+                curState = new HashMap<String, Double>();// clear state for next go around
             }
             lastUpdate = System.currentTimeMillis(); // set lastUpdate to reset the timer 
         }
