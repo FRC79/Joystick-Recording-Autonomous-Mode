@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 // for saving and retrieving files 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -60,6 +61,17 @@ public class RobotRecorder {
     }
     private Mode curMode = Mode.NORMAL;
 	
+    // method for getting names of all robot recording files	
+    public array getAllRoboFiles(){
+		file dir = new file(FILE_PATH);
+		FilenameFilter filter = new FilenameFilter() {
+        	@Override
+        	public boolean accept(File f, String name) {
+            	return name.endsWith(FILE_EXT);
+        	}
+    	};
+		return dir.list(filter); // all the names of files in the filepath that end with the custom extension
+	}
 	
     // methods for saing and retrieving recordArray to/from files
 	
