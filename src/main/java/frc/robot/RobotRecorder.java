@@ -26,14 +26,16 @@ import java.io.ObjectOutputStream;
 public class RobotRecorder {
 
     // import constants from constants.java
-    static final double  UPDATE_FREQ    = RobotRecorderConstants.UPDATE_FREQUENCY;
-    static final double  RECORD_LENGTH  = RobotRecorderConstants.RECORDING_DURATION; 
-    static final String  FILE_EXT       = RobotRecorderConstants.SAVE_FILE_EXTENSION;
-    static final String  FILE_PATH      = RobotRecorderConstants.SAVE_FILE_PATH;
-    static final String  FILE_NAME      = RobotRecorderConstants.SAVE_FILE_NAME;
-    static final boolean PRINT_DEBUG    = RobotRecorderConstants.PRINT_DEBUG_INFO;
-    static final boolean VERBOSE_DEBUG  = RobotRecorderConstants.VERBOSE_DEBUG_PRINT;
-    
+    static final double  UPDATE_FREQ    	= RobotRecorderConstants.UPDATE_FREQUENCY;
+    static final double  RECORD_LENGTH  	= RobotRecorderConstants.RECORDING_DURATION; 
+    static final String  FILE_EXT       	= RobotRecorderConstants.SAVE_FILE_EXTENSION;
+    static final String  FILE_PATH      	= RobotRecorderConstants.SAVE_FILE_PATH;
+    static final String  FILE_NAME      	= RobotRecorderConstants.SAVE_FILE_NAME;
+    static final boolean PRINT_DEBUG    	= RobotRecorderConstants.PRINT_DEBUG_INFO;
+    static final boolean VERBOSE_DEBUG  	= RobotRecorderConstants.VERBOSE_DEBUG_PRINT;
+    static final boolean SHOULD_RECORD 		= RobotRecorderConstants.SHOULD_RECORD;
+    static final boolean INTERPOLATE_VALUES 	= RobotRecorderConstants.INTERPOLATE_VALUES;
+	    
     // time recording started (to stop recording once the auton timer is over ) 
     private double startTime; 
     
@@ -109,6 +111,8 @@ public class RobotRecorder {
     }
 
     public void startRecording(){
+	// if recording is not enabled stop here
+	if(!SHOULD_RECORD){ return; }
         recordArray = new ArrayList<HashMap<String, Double>>();
         startTime = System.currentTimeMillis();
         curMode = Mode.RECORD;
@@ -139,6 +143,15 @@ public class RobotRecorder {
      */
     public Double getRobotData(String Key){
         if(curMode == Mode.PLAY){
+		if(INTERPOLATE_VALUES){ // if values should be interpolated
+			if(recordArray.get(curUpdateIndex+1) == null){ return curState.get(Key); } // if the next value does not exist don't try to interpolate
+			
+			Double dataAge = System.currentTimeMillis() - lastUpdate; // how old the curent info is
+			Double fraction = dataAge/UPDATE_FREQ; // the data's age / how long it will live = % till the data is refreshed
+			/* value1 + fraction * (value2 - value1) = mix of current and next value according to fraction */
+			Double lerpData = curState.get(Key) + fraction * (recordArray.get(curUpdateIndex+1).get(key) - curState.get(Key));
+			return lerpData;
+		}
             return curState.get(Key);
         }
         return (Double) null;
